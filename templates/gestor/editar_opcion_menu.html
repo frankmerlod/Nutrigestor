@@ -1,0 +1,15 @@
+{% extends 'gestor/base.html' %}
+
+{% block content %}
+  <h2>{{ alimento_en_opcion.id|yesno:"Editar Alimento en Opción,Agregar Alimento en Opción" }}</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="nombre">Nombre de Opción</label>
+      <input type="text" id="nombre" name="nombre" class="form-control" value="{{ opcion_menu.nombre }}" required>
+    </div>
+    <button type="submit" class="btn btn-success mt-3">Guardar</button>
+  </form>
+  <a href="{% url 'vista_nutricion' opcion_menu.comida.usuario.pk %}" class="btn btn-secondary mt-3">Cancelar</a>
+{% endblock %}
+

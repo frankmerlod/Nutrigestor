@@ -1,0 +1,34 @@
+{% extends 'gestor/base.html' %}
+
+{% block title %}Lista de Usuarios{% endblock %}
+
+{% block content %}
+<h2 class="text-center">Lista de Usuarios</h2>
+<a href="{% url 'agregar_usuario' %}" class="btn btn-success mb-3">Agregar Usuario</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Edad</th>
+            <th>Peso (kg)</th>
+            <th>Altura (cm)</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for usuario in usuarios %}
+        <tr>
+            <td><a href="{% url 'detalle_usuario' usuario.id %}">{{ usuario.nombre }}</a></td>
+            <td>{{ usuario.edad }}</td>
+            <td>{{ usuario.peso }}</td>
+            <td>{{ usuario.altura }}</td>
+            <td>
+                <a href="{% url 'editar_usuario' usuario.id %}" class="btn btn-warning btn-sm">Editar</a>
+                <a href="{% url 'eliminar_usuario' usuario.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+                <a href="{% url 'vista_nutricion' usuario.id %}" class="btn btn-primary btn-sm">Ver plan de Nutrición</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

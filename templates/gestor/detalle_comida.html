@@ -1,0 +1,161 @@
+{% extends 'gestor/base.html' %}
+
+{% block content %}
+
+<div class="container">
+  <h2>Plan de Nutrición para: {{ usuario.nombre }}</h2>
+  <p><strong>Calorías Objetivo:</strong> <strong id="caloriasObjetivo" data-calorias="{{ calorias_objetivo }}">{{ calorias_objetivo }}Kcal</strong> </p>
+  <p><strong>Objetivo de Entrenamiento: {{ objetivo_entrenamiento }}</strong></p>
+  <div class="mt-3 mb-3">
+    <a href="{% url 'vista_nutricion' usuario.pk %}" class="btn btn-secondary">Volver a Nutrición</a>
+    {% if siguiente_comida != None%}
+      <a href="{% url 'detalle_comida' siguiente_comida.id %}" class="btn btn-primary ml-3">Siguiente Comida ({{ siguiente_comida.nombre }})</a>
+      {% else %}
+      <p>No hay más comidas</p>
+    {% endif %}
+  </div>
+  <hr>
+  
+  {% for comida in comidas %}
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <div class="col align-items-center">
+        <div class="ms-1">
+          <h4>{{ comida.nombre }}</h4>
+        </div>
+        
+      </div>
+      
+      <div class="mt-1 mb-1">
+        <a href="{% url 'agregar_opcion_menu_detalle' comida.id %}" class="btn btn-sm btn-success">Agregar Opción de Menú</a>
+      </div>
+      {% comment %} Mostrar informacion de nutrientes en cada comida {% endcomment %}
+      <div class="col mb-1">
+        <p><strong>Porcentaje de Calorias para {{ comida.nombre }} :</strong> {{ comida.porcentaje_calorias}}%</p>
+      </div>
+      <div class="col mb-1">
+        <p><strong>Macronutrientes para {{ comida.nombre }}</strong>: <strong>Calorías Objetivo</strong>: {{ comida.calorias_por_comida }}kcal - <strong>Proteínas Objetivo</strong>: {{ comida.proteinas_por_comida }}g - <strong>Carbohidratos Objetivo</strong>: {{ comida.carbohidratos_por_comida }}g - <strong>Grasas Objetivo</strong>: {{ comida.grasas_por_comida }}g </p>
+
+        <div class="d-flex mb-2">
+          <div>
+            <small class="text-muted">Promedio de Macronutrientes en {{ comida.nombre }}:</small>
+          </div>
+
+          <div class="ms-1">
+            <small class="text-muted">Calorías: {{ promedio_calorias }} Kcal</small>
+          </div>
+    
+          <div class="ms-1">
+            <small class="text-muted">Proteínas: {{ promedio_proteinas }}g</small>
+          </div>
+    
+          <div class="ms-1">
+            <small class="text-muted">Carbohidratos: {{ promedio_carbohidratos }}g</small>
+          </div>
+    
+          <div class="ms-1">
+            <small class="text-muted">Grasas: {{ promedio_grasas }}g</small>
+          </div>
+          <div class="ms-1">
+            <small class="text-muted">(Promedio de todas las opciones)</small>
+          </div>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="list-group">
+    {% for opcion in opciones_menu %}
+      <li class="list-group-item">
+
+            <div class="d-flex justify-content-between align-items-center">
+                  
+                  <div class="d-flex justify-content-between">
+                    <div class="col">
+                        <h5>
+                          <a href="{% url 'detalle_opcion' opcion.pk %}">{{ opcion.nombre }}</a>
+                        </h5>
+                        <a href="{% url 'agregar_alimento_en_opcion_detalle' opcion.usuario.pk opcion.pk %}" class="btn btn-sm btn-success mt-1 mb-1">Agregar Alimento</a>
+                        <div class="d-flex align-items-center">
+                          <div class="me-3">
+                            <strong>Totales:</strong>
+                            <span>Calorías: {{ opcion.total_calorias }} Kcal</span>
+                          </div>
+            
+                          <div class="me-3">
+                            <span >Proteínas: {{ opcion.total_proteinas }}g</span>
+                          </div>
+            
+                          <div class="me-3">
+                            <span >Carbohidratos: {{ opcion.total_carbohidratos }}g</span>
+                          </div>
+            
+                          <div class="me-3">
+                            <span >Grasas: {{ opcion.total_grasas }}g</span>
+                          </div>
+                    </div>
+                    </div>
+      
+                    
+              </div>
+              
+                  <div>
+                    <a href="{% url 'detalle_opcion' opcion.pk %}" class="btn btn-sm btn-info ml-3">Ver detalle</a>
+                    <a href="{% url 'editar_opcion_menu_detalle' opcion.pk %}" class="btn btn-sm btn-primary ml-3">Editar Opción</a>
+                    <a href="{% url 'eliminar_opcion_menu_detalle' opcion.pk %}" class="btn btn-sm btn-danger ml-3">Eliminar Opción</a>
+                  </div>
+            </div>
+        <ul class="list-group mt-3 ">
+          {% for alimento in opcion.alimentos_en_opcion.all %}
+              <li class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="me-2">
+                          <h5>
+                            <a href="{% url 'editar_alimento_en_opcion_detalle' alimento.pk %}" class="text-dark">{{ alimento.alimento.nombre }}</a>
+                          </h5>
+                        </div>
+                        
+                        <p class="mb-1 ms-1">
+                          <small>Cantidad Gramos: {{ alimento.cantidad }}g |</small>
+                          <small class="ms-1">Cantidad Unidades: {{ alimento.cantidad_unidades }} {{ alimento.unidad }}</small>
+                        </p>
+
+                        <p class="mb-1 ms-1">
+                          <small>
+                            (Calorías: {{ alimento.calorias }}Kcal - Proteínas: {{ alimento.proteinas }}g - Carbohidratos: {{ alimento.carbohidratos }}g - Grasas: {{ alimento.grasas }}g)
+                          </small>
+                        </p>
+                        
+                      </div>
+                  </div>
+                  <div>
+                    <a href="{% url 'editar_alimento_en_opcion_detalle' alimento.pk %}" class="btn btn-sm btn-primary me-2">Editar</a>
+                    <a href="{% url 'eliminar_alimento_en_opcion_detalle' alimento.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+                  </div>
+                </div>
+            </li>
+          {% endfor %}
+        </ul>
+        
+      </li>
+    {% endfor %}
+  </ul>
+  <div class="mt-3 mb-3">
+    <a href="{% url 'agregar_opcion_menu_detalle' comida.id %}" class="btn btn-success">Agregar Opción de Menú</a>
+    <a href="{% url 'vista_nutricion' usuario.pk %}" class="btn btn-secondary ml-3">Volver a Nutrición</a>
+    {% if siguiente_comida != None%}
+      <a href="{% url 'detalle_comida' siguiente_comida.id %}" class="btn btn-primary ml-3">Siguiente Comida ({{ siguiente_comida.nombre }})</a>
+      {% else %}
+      <p>No hay más comidas</p>
+    {% endif %}
+
+  </div>
+
+  
+
+  {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends 'gestor/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Editar {{ alimento_en_opcion.alimento.nombre }} en {{ alimento_en_opcion.opcion_menu.nombre }} / {{ alimento_en_opcion.opcion_menu.comida.nombre }}</h2>
+    <span>Puedes modificar las cantidades en gramos/unidades del alimento seleccionado <span>
+    <div class="row">
+        <div class="col-md-8">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="nombre">Nombre del Alimento</label>
+                    <input type="text" id="nombre" name="nombre" class="form-control" value="{{ alimento_en_opcion.alimento.nombre }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="calorias">Calorías</label>
+                    <input type="number" step="any" id="calorias" name="calorias" class="form-control" value="{{ calorias }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="proteinas">Proteínas</label>
+                    <input type="number" step="any" id="proteinas" name="proteinas" class="form-control" value="{{ proteinas }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="carbohidratos">Carbohidratos</label>
+                    <input type="number" step="any" id="carbohidratos" name="carbohidratos" class="form-control" value="{{ carbohidratos }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="grasas">Grasas</label>
+                    <input type="number" step="any" id="grasas" name="grasas" class="form-control" value="{{ grasas }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="cantidad">Cantidad (g)</label>
+                    <input type="number" step="any" id="cantidad" name="cantidad" class="form-control" value="{{ alimento_en_opcion.cantidad }}" required data-original="{{ alimento_en_opcion.cantidad }}">
+                    <small id="cantidadHelp" class="form-text text-muted">Puedes modificar la cantidad</small>
+                </div>
+                <div class="form-group">
+                    <label for="cantidad_unidades">Cantidad (unidades)</label>
+                    <input type="number" step="any" id="cantidad_unidades" name="cantidad_unidades" class="form-control" value="{{ alimento_en_opcion.cantidad_unidades }}" required data-original="{{ alimento_en_opcion.cantidad_unidades }}">
+                    <small id="cantidadUnidadesHelp" class="form-text text-muted">Puedes modificar la cantidad en unidades</small>
+                </div>
+                <div class="form-group">
+                    <label for="unidad">Unidad</label>
+                    <input type="text" id="unidad" name="unidad" class="form-control" value="{{ unidad }}" readonly>
+                </div>
+                <button type="submit" class="btn btn-success mt-3">Guardar</button>
+            </form>
+            <a href="{% url 'detalle_comida' alimento_en_opcion.opcion_menu.comida.pk %}" class="btn btn-secondary mt-3">No Editar</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const cantidadInput = document.getElementById('cantidad');
+        const cantidadUnidadesInput = document.getElementById('cantidad_unidades');
+    
+        const cantidadOriginal = parseFloat(cantidadInput.dataset.original);
+        const unidadesOriginal = parseFloat(cantidadUnidadesInput.dataset.original);
+    
+        cantidadInput.addEventListener('input', function() {
+            const cantidadNueva = parseFloat(cantidadInput.value);
+            if (!isNaN(cantidadNueva)) {
+                const unidadesNuevas = (cantidadNueva / cantidadOriginal) * unidadesOriginal;
+                cantidadUnidadesInput.value = unidadesNuevas.toFixed(2);
+            }
+        });
+    
+        cantidadUnidadesInput.addEventListener('input', function() {
+            const unidadesNuevas = parseFloat(cantidadUnidadesInput.value);
+            if (!isNaN(unidadesNuevas)) {
+                const cantidadNueva = (unidadesNuevas / unidadesOriginal) * cantidadOriginal;
+                cantidadInput.value = cantidadNueva.toFixed(2);
+            }
+        });
+    });
+</script>
+{% endblock %}

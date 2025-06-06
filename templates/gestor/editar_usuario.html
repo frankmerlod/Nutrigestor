@@ -1,0 +1,24 @@
+{% extends 'gestor/base.html' %}
+
+{% block title %}Editar Usuario{% endblock %}
+
+{% block content %}
+<h2 class="text-center">Editar Usuario {{ usuario.nombre }}</h2>
+<div class="card">
+    <div class="card-body">
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.as_p }}
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a href="{% url 'lista_usuarios' %}" class="btn btn-secondary">Volver a la lista de usuarios</a>
+        </form>
+        
+    </div>
+    
+</div>
+    
+
+
+{% endblock %}

@@ -1,0 +1,19 @@
+
+.opcion-item {
+    cursor: pointer;
+}
+
+.opcion-item:hover .totales {
+    background-color: #f8f9fa;
+}
+
+.totales {
+    transition: background-color 0.3s ease;
+}
+
+.modal-body {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+

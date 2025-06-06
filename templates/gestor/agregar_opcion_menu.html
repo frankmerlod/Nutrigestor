@@ -1,0 +1,62 @@
+{% extends 'gestor/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Agregar Opción de Menú a {{ comida.nombre }}</h2>
+
+            <form method="post" class="mb-3">
+                {% csrf_token %}
+                <div class="form-group">
+                  <label for="nombre">Nombre de Opción</label>
+                  <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Opcion 1:" required>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Agregar</button>
+            </form>
+            <a href="{% url 'vista_nutricion' comida.usuario.pk %}" class="btn btn-secondary mt-1">Cancelar</a>
+        </div>
+        
+        <div class="col-md-6">
+            <h3>Opción de Menú Existente</h3>
+            <ul id="opciones-existentes" class="list-group" style="max-height: 600px; overflow-y: scroll;">
+                {% for opcion in opciones_existentes %}
+                    <li class="list-group-item">
+                        <a href="#" class="opcion-existente text-decoration-none" data-id="{{ opcion.id }}">{{ opcion.nombre }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const opciones = document.querySelectorAll('.opcion-existente');
+    opciones.forEach(opcion => {
+        opcion.addEventListener('click', function (event) {
+            event.preventDefault();
+            const opcionId = this.dataset.id;
+            const comidaId = "{{ comida.id }}";
+            const url = `{% url 'copiar_opcion_menu' 0 comida.id %}`.replace('0', opcionId);
+
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = "{% url 'detalle_comida' comida.id %}";
+                } else {
+                    alert('Error al copiar la opción de menú.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+});
+</script>
+{% endblock %}

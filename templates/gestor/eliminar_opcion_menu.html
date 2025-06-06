@@ -1,0 +1,13 @@
+{% extends 'gestor/base.html' %}
+
+{% block title %}Eliminar Opción de Menú - {{ opcion_menu.nombre }}{% endblock %}
+
+{% block content %}
+<h2 class="text-center">Eliminar Opción de Menú - {{ opcion_menu.nombre }}</h2>
+<p>¿Estás seguro de que deseas eliminar la opción de menú "{{ opcion_menu.nombre }}"?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a href="{% url 'detalle_usuario' pk=opcion_menu.comida.usuario.id %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

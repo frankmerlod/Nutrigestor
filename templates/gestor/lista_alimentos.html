@@ -1,0 +1,20 @@
+{% extends 'gestor/base.html' %}
+
+{% block title %}Lista de Alimentos{% endblock %}
+
+{% block content %}
+<h2 class="text-center">Lista de Alimentos</h2>
+<div class="list-group">
+    {% for alimento in alimentos %}
+        <div class="list-group-item">
+            <h5 class="mb-1">{{ alimento.nombre }}</h5>
+            <p>Calorías: {{ alimento.calorias }}</p>
+            <p>Proteínas: {{ alimento.proteinas }}g</p>
+            <p>Carbohidratos: {{ alimento.carbohidratos }}g</p>
+            <p>Grasas: {{ alimento.grasas }}g</p>
+            <a href="{% url 'editar_alimento' alimento.id %}" class="btn btn-primary btn-sm">Editar</a>
+            <a href="{% url 'eliminar_alimento' alimento.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

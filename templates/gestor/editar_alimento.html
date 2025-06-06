@@ -1,0 +1,12 @@
+{% extends 'gestor/base.html' %}
+
+{% block title %}Editar Alimento{% endblock %}
+
+{% block content %}
+<h2 class="text-center">Editar Alimento</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+</form>
+{% endblock %}

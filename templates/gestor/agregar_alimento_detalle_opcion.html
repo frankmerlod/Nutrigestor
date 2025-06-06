@@ -1,0 +1,207 @@
+{% extends 'gestor/base.html' %}
+
+{% block content %}
+<div class="container">
+  <h2>Agregar Alimento en Base de Datos</h2>
+  <div id="mensaje_guardado" class="alert" style="display: none;"></div>
+  <div class="row">
+    <div class="col-md-8">
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="nombre">Nombre del Alimento</label>
+            <input type="text" name="nombre" id="nombre" class="form-control" required>
+            <small id="unidadHelp" class="form-text text-muted">Puedes modificar el nombre</small>
+        </div>
+        <div id="resultados" class="mt-3"></div>
+        <div class="form-group">
+            <label for="calorias">Calorías</label>
+            <input type="decimal" step="any" name="calorias" id="calorias" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="proteinas">Proteínas</label>
+            <input type="decimal" step="any" name="proteinas" id="proteinas" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="carbohidratos">Carbohidratos</label>
+            <input type="decimal" step="any" name="carbohidratos" id="carbohidratos" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="grasas">Grasas</label>
+            <input type="decimal" step="any" name="grasas" id="grasas" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="cantidad">Cantidad (g)</label>
+            <input type="decimal" step="any" name="cantidad" id="cantidad" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="cantidadQty">Cantidad (unidades)</label>
+            <input type="decimal" step="any" name="cantidadQty" id="cantidadQty" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label for="cantidadUnit">Unidad</label>
+            <input type="text" step="any" name="cantidadUnit" id="cantidadUnit" class="form-control" required>
+            <small id="unidadHelp" class="form-text text-muted">Puedes modificar la unidad</small>
+          </div>
+
+        <button type="submit" class="btn btn-success mt-3">Guardar</button>
+      </form>
+      <a href="{% url 'agregar_alimento_en_opcion_detalle_opcion' usuario_id opcion_id%}" class="btn btn-secondary mt-3">Volver a Atras</a>
+    </div>
+    <div class="col-md-4">
+      <h4>Información Nutricional</h4>
+      <div id="tabla_nutricional"></div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+    const NUTRIENT_MAPPING = {
+        203: ["Proteínas", "g"],
+        204: ["Grasas Totales", "g"],
+        205: ["Carbohidratos", "g"],
+        207: ["Cenizas", "g"],
+        208: ["Energía", "kcal"],
+        221: ["Alcohol", "g"],
+        255: ["Agua", "g"],
+        262: ["Cafeína", "mg"],
+        269: ["Azúcares", "g"],
+        291: ["Fibra Dietética", "g"],
+        301: ["Calcio, Ca", "mg"],
+        303: ["Hierro, Fe", "mg"],
+        304: ["Magnesio, Mg", "mg"],
+        305: ["Fósforo, P", "mg"],
+        306: ["Potasio, K", "mg"],
+        307: ["Sodio, Na", "mg"],
+        309: ["Zinc, Zn", "mg"],
+        312: ["Cobre, Cu", "mg"],
+        317: ["Selenio, Se", "µg"],
+        320: ["Vitamina A, RAE", "µg"],
+        323: ["Vitamina E (alfa-tocoferol)", "mg"],
+        324: ["Vitamina D (D2 + D3)", "µg"],
+        328: ["Vitamina D", "IU"],
+        334: ["Caroteno, beta", "µg"],
+        337: ["Licopeno", "µg"],
+        338: ["Luteína + Zeaxantina", "µg"],
+        401: ["Vitamina C, ácido ascórbico", "mg"],
+        404: ["Tiamina", "mg"],
+        405: ["Riboflavina", "mg"],
+        406: ["Niacina", "mg"],
+        410: ["Ácido Pantoténico", "mg"],
+        415: ["Vitamina B-6", "mg"],
+        418: ["Vitamina B-12", "µg"],
+        421: ["Colina, total", "mg"],
+        428: ["Vitamina K (filoquinona)", "µg"],
+        430: ["Vitamina K (menaquinona-4)", "µg"],
+        431: ["Ácido Fólico, DFE", "µg"],
+        432: ["Ácido Fólico, total", "µg"],
+        435: ["Folato, alimento", "µg"],
+        601: ["Colesterol", "mg"],
+        606: ["Ácidos grasos saturados, totales", "g"],
+        645: ["Ácidos grasos monoinsaturados, totales", "g"],
+        646: ["Ácidos grasos poliinsaturados, totales", "g"],
+    };
+    
+    document.getElementById('nombre').addEventListener('input', function() {
+        const query = this.value;
+        if (query.length >= 3) {  // Comienza la búsqueda después de 3 caracteres
+            fetch(`/buscaralimentonutritionix/?query=${query}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Data from API:', data); // Debugging: Verifica la respuesta de la API
+                    const resultadosDiv = document.getElementById('resultados');
+                    resultadosDiv.innerHTML = '';
+                    const alimentos = [...data.alimentos.common, ...data.alimentos.branded];
+                    if (alimentos.length > 0) {
+                        alimentos.forEach(alimento => {
+                            const button = document.createElement('button');
+                            button.type = 'button';
+                            button.className = 'list-group-item list-group-item-action';
+                            button.innerHTML = `
+                                <img src="${alimento.foto}" alt="${alimento.nombre}" class="img-thumbnail" style="width: 50px; height: 50px;">
+                                ${alimento.nombre}
+                            `;
+                            button.addEventListener('click', function() {
+                                const queryParams = `nombre=${encodeURIComponent(alimento.nombre)}`;
+                                
+                                fetch(`/obtener_detalle_alimento/?${queryParams}`)
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error('Network response was not ok');
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(detailData => {
+                                        console.log('Detail Data:', detailData); // Debugging: Verifica los detalles del alimento
+                                        document.getElementById('nombre').value = detailData.alimento.nombre;
+                                        document.getElementById('calorias').value = detailData.alimento.calorias;
+                                        document.getElementById('proteinas').value = detailData.alimento.proteinas;
+                                        document.getElementById('carbohidratos').value = detailData.alimento.carbohidratos;
+                                        document.getElementById('grasas').value = detailData.alimento.grasas;
+                                        document.getElementById('cantidad').value = detailData.alimento.serving_weight_grams; 
+                                        document.getElementById('cantidadQty').value = detailData.alimento.serving_qty;
+                                        document.getElementById('cantidadUnit').value = detailData.alimento.serving_unit;
+    
+                                        // Mostrar el mensaje de guardado
+                                        const mensajeGuardadoDiv = document.getElementById('mensaje_guardado');
+                                        if (detailData.alimento.guardado.error) {
+                                            mensajeGuardadoDiv.className = 'alert alert-danger';
+                                            mensajeGuardadoDiv.textContent = detailData.alimento.guardado.error;
+                                        } else {
+                                            mensajeGuardadoDiv.className = 'alert alert-success';
+                                            mensajeGuardadoDiv.textContent = detailData.alimento.guardado.message;
+                                        }
+                                        mensajeGuardadoDiv.style.display = 'block';
+    
+                                        // Limpiar el buscador
+                                        resultadosDiv.innerHTML = '';
+    
+                                        // Mostrar la tabla nutricional
+                                        const tablaNutricionalDiv = document.getElementById('tabla_nutricional');
+                                        tablaNutricionalDiv.innerHTML = generateNutritionTable(detailData.alimento.nutrientes);
+                                    })
+                                    .catch(error => {
+                                        console.error('There was a problem with the fetch operation:', error);
+                                    });
+                            });
+                            resultadosDiv.appendChild(button);
+                        });
+                    } else {
+                        resultadosDiv.innerHTML = '<p>No se encontraron resultados.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        }
+    });
+    
+    function generateNutritionTable(nutrients) {
+        if (!nutrients || nutrients.length === 0) {
+            return '<p>No hay información nutricional disponible.</p>';
+        }
+        let tableHTML = '<table class="table">';
+        tableHTML += '<thead><tr><th>Nutriente</th><th>Cantidad</th></tr></thead><tbody>';
+        nutrients.forEach(nutrient => {
+            const nutrientInfo = NUTRIENT_MAPPING[nutrient.attr_id];
+            const name = nutrientInfo ? nutrientInfo[0] : `Nutriente ${nutrient.attr_id}`;
+            const unit = nutrientInfo ? nutrientInfo[1] : '';
+            tableHTML += `<tr><td>${name}</td><td>${nutrient.value} ${unit}</td></tr>`;
+        });
+        tableHTML += '</tbody></table>';
+        return tableHTML;
+    }
+    
+    </script>
+    
+{% endblock %}
+
+

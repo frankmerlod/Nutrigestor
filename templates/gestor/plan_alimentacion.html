@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Plan de Nutrición para: {{ usuario.nombre }}</h2>
+  <p><strong>Calorías Objetivo:</strong> <strong id="caloriasObjetivo" data-calorias="{{ calorias_objetivo }}">{{ calorias_objetivo }}Kcal</strong> </p>
+  <p><strong>Objetivo de Entrenamiento: {{ usuario.objetivo_entrenamiento }}</strong></p>
+  
+  <hr>
+  
+  {% for comida in comidas %}
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h4>{{ comida.nombre }}</h4>
+      <div class="col mb-2">
+        <small class="form-text text-muted"><strong>Porcentaje de Calorias para {{ comida.nombre }} :</strong> {{ comida.porcentaje_calorias}}%</small>
+      </div>
+      <div class="col mb-2">
+        <small class="form-text text-muted"><strong>Macronutrientes para {{ comida.nombre }}: </strong>Calorías Objetivo: {{ comida.calorias_por_comida }}kcal - Proteínas Objetivo: {{ comida.proteinas_por_comida }}g - Carbohidratos Objetivo: {{ comida.carbohidratos_por_comida }}g - Grasas Objetivo: {{ comida.grasas_por_comida }}g </small>
+      </div>
+    </div>
+  </div>
+
+  <ul class="list-group">
+    {% for opcion in comida.opciones_menu %}
+      <li class="list-group-item">
+
+            <div class="d-flex">
+                <p><strong>{{ opcion.nombre }}</strong> Calorías: {{ opcion.total_calorias }}Kcal - Proteínas: {{ opcion.total_proteinas }}g - Carbohidratos: {{ opcion.total_carbohidratos }}g - Grasas: {{ opcion.total_grasas }}g</p>
+            
+
+            </div>
+        <ul class="list-group ">
+          {% for alimento in opcion.alimentos_en_opcion.all %}
+              <li class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="me-1">
+                          <p> <strong>{{ alimento.alimento.nombre }}</strong> <small>Cantidad Gramos: {{ alimento.cantidad }}g | Cantidad Unidades: {{ alimento.cantidad_unidades }} {{ alimento.unidad }}</small></p>
+
+                        </div>
+                        
+                      </div>
+                  </div>
+                </div>
+            </li>
+          {% endfor %}
+        </ul>
+        
+      </li>
+    {% endfor %}
+  </ul>
+
+  {% endfor %}
+</div>
+
+</body>
+</html>

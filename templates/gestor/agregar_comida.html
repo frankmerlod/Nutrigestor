@@ -1,0 +1,15 @@
+{% extends 'gestor/base.html' %}
+
+{% block title %}Agregar Comida{% endblock %}
+
+{% block content %}
+<h2 class="text-center">Agregar Comida para {{ usuario.nombre }}</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.as_p }}
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a href="{% url 'detalle_usuario' usuario.id %}" class="btn btn-secondary">Volver al detalle del usuario</a>
+</form>
+{% endblock %}

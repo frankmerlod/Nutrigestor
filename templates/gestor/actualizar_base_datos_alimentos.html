@@ -1,0 +1,15 @@
+{% extends 'gestor/base.html' %}
+
+{% block title %}Actualizar Base de Datos{% endblock %}
+
+{% block content %}
+<h2 class="text-center">Actualizar Base de Datos de Alimentos</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="query">Buscar Alimento</label>
+        <input type="text" name="query" id="query" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+</form>
+{% endblock %}
